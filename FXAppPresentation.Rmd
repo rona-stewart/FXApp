@@ -1,0 +1,62 @@
+---
+title: "FX Translation"
+author: "Rona Stewart"
+date: "`r Sys.Date()`"
+output:
+  slidy_presentation: default
+  ioslides_presentation: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library (xlsx); library(shiny); library(ggplot2); library(plotly)
+
+```
+
+## Introduction
+
+<font size = 4>
+
+- This presentation and the shiny app, FX translation, have been developed for the purposes of the course project for the Developing Data Products module from Johns Hopkins University.
+- The basic idea behind the app is to translate between a base currency and up to three other currencies, using the Euro (EUR), Pound (GBP), Dollar (USD) and Yen (YEN) as the options.  The app then provides a very rudimentary prediction for future values of the selected exchange rates.
+- It is important to note:  
+  + The prediction algorithm is very simplistic, and therefore the results should not be used in any investment or trading decisions, the intention is simply to show the potential of the functionality.  
+  + The app will not translate a currency to itself (e.g. EUR to EUR) since this will always be 1.  
+  + If no options are selected (i.e. no translation currencies), the app will not function.
+
+</font>
+
+## Historic Data Source
+
+<font size = 4>
+
+- The historic data is taken from the `r a("Bank of England, Database G.12", href = "https://www.bankofengland.co.uk/statistics/Tables")` as at 2024/03/21.
+- A preview of the data is shown below:
+```{r historicdata, echo = TRUE, rcomment = ""}
+FX <- read.xlsx("./FX_data.xlsx", sheetIndex = 1, startRow = 3, 
+                header = TRUE, keepFormulas = FALSE)
+head(FX[1:6,1:6])
+```
+
+</font>
+
+## Example Presentation
+```{r historicpot, results = "asis"}
+g <- ggplot(FX, aes(x=Date, y=value, color = currency)) +
+                geom_line(aes(y=EUR.GBP), col = "red") +
+                geom_line(aes(y=USD.GBP), col = "blue") +
+                ylab ("GBP") +
+                labs (title = "Historic Exchange Rates") +
+                theme_bw()
+ggplotly(g)
+```
+
+## Prediction Model
+
+<font size = 4>
+
+- The final tab of the app provides a simplistic prediction of the future exchange rates between currencies.
+- **DISCLAIMER** The prediction is based on a linear model and therefore is not a realistic function to predict future exchange rates.  Rather this is intended to demonstrate the potential functionality of such an app.
+- A table will be displayed with the exchange rate, followed by the predicted value as at the specified date (using the panel on the left).  The dates taken to inform the prediction can also be set between the minimum (January 2014) and maximum (February 2024) for which data are available.
+
+</font>
